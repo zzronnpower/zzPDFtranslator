@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>zzPDFtranslator</title>
+  <link rel="stylesheet" href="/styles.css" />
+</head>
+<body>
+  <main class="container">
+    <h1>zzPDFtranslator</h1>
+    <p class="subtitle">Upload PDF -> estimate cost -> accept estimate -> translate -> download PDF</p>
+
+    <section class="card">
+      <label class="label" for="fileInput">1) Upload PDF</label>
+      <input id="fileInput" type="file" accept="application/pdf" />
+      <button id="uploadBtn">Upload</button>
+      <p id="uploadInfo" class="muted"></p>
+    </section>
+
+    <section class="card">
+      <label class="label" for="modelSelect">2) Choose model</label>
+      <select id="modelSelect"></select>
+      <div class="rangeRow">
+        <input id="pageFrom" type="number" min="1" placeholder="From page (optional)" />
+        <input id="pageTo" type="number" min="1" placeholder="To page (optional)" />
+      </div>
+      <p class="muted">Leave blank to translate all pages. Example: 1 to 5 for a low-cost preview.</p>
+      <button id="estimateBtn" disabled>Estimate Cost</button>
+      <div id="estimateBox" class="estimate hidden">
+        <p><strong>Estimated cost:</strong> <span id="estimateUsd">-</span> USD</p>
+        <p class="muted">Pages: <span id="estimatePages">-</span> | Lines: <span id="estimateLines">-</span></p>
+        <p class="muted">Input tokens: <span id="estimateInput">-</span> | Output tokens: <span id="estimateOutput">-</span></p>
+      </div>
+      <label class="confirm hidden" id="acceptWrap">
+        <input id="acceptEstimate" type="checkbox" />
+        Yes, accept estimate and start translation with this model.
+      </label>
+      <button id="translateBtn" disabled>Translate</button>
+    </section>
+
+    <section class="card">
+      <label class="label">3) Job status</label>
+      <p id="jobStatus">Idle</p>
+      <div class="progress">
+        <div id="progressBar"></div>
+      </div>
+      <p id="actualCost" class="muted"></p>
+      <a id="downloadBtn" class="download hidden" href="#" download>Download translated PDF</a>
+    </section>
+
+    <section class="card">
+      <label class="label">4) Saved translated files</label>
+      <p id="savedEmpty" class="muted">No translated files yet.</p>
+      <ul id="savedList" class="savedList"></ul>
+    </section>
+  </main>
+
+  <script src="/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,1 @@
+"""PDF translator app package."""

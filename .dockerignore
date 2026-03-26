@@ -1,0 +1,11 @@
+.git
+.gitignore
+.venv
+venv
+__pycache__
+*.pyc
+.env
+storage/input/*.pdf
+storage/output/*.pdf
+storage/downloaded/*.pdf
+storage/tmp/*
