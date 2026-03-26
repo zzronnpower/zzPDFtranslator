@@ -1,5 +1,10 @@
 # zzPDFtranslator
 
+![Python](https://img.shields.io/badge/python-3.12-blue)
+![FastAPI](https://img.shields.io/badge/FastAPI-0.115.0-009688)
+![License](https://img.shields.io/badge/license-MIT-green)
+![Docker](https://img.shields.io/badge/docker-ready-2496ED)
+
 Web app flow:
 
 1. Upload a PDF
@@ -62,6 +67,32 @@ uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
 ```
 
 Open: `http://localhost:8000`
+
+## Docker Quick Deploy
+
+```bash
+cp .env.example .env
+# edit .env and set OPENAI_API_KEY
+docker compose up -d --build
+```
+
+Open: `http://localhost:8000`
+
+Stop:
+
+```bash
+docker compose down
+```
+
+## Environment
+
+- `OPENAI_API_KEY`: required for translation
+- `DEFAULT_MODEL`: default `gpt-4o-mini`
+- `TRANSLATION_TARGET_LANGUAGE`: default `Vietnamese`
+- `TRANSLATION_BATCH_MAX_ITEMS`: adaptive batch max item count
+- `TRANSLATION_BATCH_MAX_TOKENS`: adaptive batch token budget
+- `WARNING_OUTPUT_GROWTH_FACTOR`: warning threshold for output/input ratio
+- `MAX_OUTPUT_GROWTH_FACTOR`: fail threshold for output/input ratio
 
 ## Notes
 
