@@ -125,12 +125,77 @@ button:disabled {
   font-weight: 700;
 }
 
+.cancel {
+  margin-top: 10px;
+  background: #b91c1c;
+}
+
+.retry {
+  margin-top: 8px;
+  background: #92400e;
+}
+
 .savedList {
   list-style: none;
   padding: 0;
   margin: 0;
   display: grid;
   gap: 8px;
+}
+
+.tabBar {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.tabBtn {
+  width: auto;
+  margin-top: 0;
+  background: #e5e7eb;
+  color: #1f2937;
+  border: 1px solid #d1d5db;
+  padding: 8px 12px;
+}
+
+.tabBtnActive {
+  background: #1d4ed8;
+  color: #ffffff;
+  border-color: #1d4ed8;
+}
+
+.historyList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  gap: 10px;
+}
+
+.historyList li {
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  background: #f9fafb;
+  padding: 10px 12px;
+}
+
+.historyTitle {
+  font-weight: 700;
+  color: #111827;
+}
+
+.historyMeta {
+  margin-top: 6px;
+  color: #4b5563;
+  font-size: 12px;
+}
+
+.historyStatusDone {
+  color: #166534;
+}
+
+.historyStatusFailed {
+  color: #b91c1c;
 }
 
 .savedList li {

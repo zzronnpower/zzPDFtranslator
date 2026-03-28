@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import html
 from collections.abc import Iterable
+from collections.abc import Callable
 
 import fitz
 import tiktoken
@@ -90,40 +91,59 @@ def write_translated_pdf(
     output_pdf_path: str,
     segments: list[TextSegment],
     translated_texts: Iterable[str],
+    on_page_rendered: Callable[[int, int], None] | None = None,
+    should_cancel: Callable[[], bool] | None = None,
 ) -> None:
     doc = fitz.open(input_pdf_path)
 
-    for segment, translated in zip(segments, translated_texts):
-        page = doc[segment.page_index]
-        rect = fitz.Rect(segment.rect)
-        if rect.is_empty or rect.width < 1 or rect.height < 1:
-            continue
+    pairs = list(zip(segments, translated_texts))
+    page_items: dict[int, list[tuple[TextSegment, str]]] = {}
+    for segment, translated in pairs:
+        page_items.setdefault(segment.page_index, []).append((segment, translated))
 
-        # Clear original text area and overlay translated content.
-        page.draw_rect(rect, color=(1, 1, 1), fill=(1, 1, 1), overlay=True)
-        candidate_font_size = _fit_font_size(segment.font_size, len(translated))
-        safe_text = html.escape(translated.strip())
-        inserted = False
+    page_indices = sorted(page_items.keys())
+    total_pages = len(page_indices)
 
-        for _ in range(6):
-            html_block = (
-                f"<div style='font-family: DejaVu Sans; font-size: {candidate_font_size:.2f}pt; line-height: 1.15;'>"
-                f"{safe_text}</div>"
-            )
-            spare_height = page.insert_htmlbox(rect, html_block)
-            if isinstance(spare_height, tuple):
-                spare_height = float(spare_height[0])
-            if spare_height >= -0.1:
-                inserted = True
-                break
-            candidate_font_size = max(6.0, candidate_font_size * 0.92)
+    for rendered_index, page_index in enumerate(page_indices, start=1):
+        if should_cancel and should_cancel():
+            raise RuntimeError("Translation cancelled by user.")
 
-        if not inserted:
-            fallback_html = (
-                "<div style='font-family: DejaVu Sans; font-size: 6pt; line-height: 1.05;'>"
-                f"{safe_text}</div>"
-            )
-            page.insert_htmlbox(rect, fallback_html)
+        try:
+            page = doc[page_index]
+            for segment, translated in page_items[page_index]:
+                rect = fitz.Rect(segment.rect)
+                if rect.is_empty or rect.width < 1 or rect.height < 1:
+                    continue
+
+                page.draw_rect(rect, color=(1, 1, 1), fill=(1, 1, 1), overlay=True)
+                candidate_font_size = _fit_font_size(segment.font_size, len(translated))
+                safe_text = html.escape(translated.strip())
+                inserted = False
+
+                for _ in range(6):
+                    html_block = (
+                        f"<div style='font-family: DejaVu Sans; font-size: {candidate_font_size:.2f}pt; line-height: 1.15;'>"
+                        f"{safe_text}</div>"
+                    )
+                    spare_height = page.insert_htmlbox(rect, html_block)
+                    if isinstance(spare_height, tuple):
+                        spare_height = float(spare_height[0])
+                    if spare_height >= -0.1:
+                        inserted = True
+                        break
+                    candidate_font_size = max(6.0, candidate_font_size * 0.92)
+
+                if not inserted:
+                    fallback_html = (
+                        "<div style='font-family: DejaVu Sans; font-size: 6pt; line-height: 1.05;'>"
+                        f"{safe_text}</div>"
+                    )
+                    page.insert_htmlbox(rect, fallback_html)
+        except Exception as exc:
+            raise RuntimeError(f"Render failed on page {page_index + 1}: {exc}") from exc
+
+        if on_page_rendered:
+            on_page_rendered(rendered_index, total_pages)
 
     try:
         doc.save(

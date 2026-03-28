@@ -14,4 +14,5 @@ services:
       PORT: ${PORT:-8000}
     volumes:
       - ./storage:/app/storage
+      - ./logs:/app/logs
     restart: unless-stopped

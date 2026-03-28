@@ -9,5 +9,6 @@ storage/downloaded/*.pdf
 storage/tmp/*
 !.gitkeep
 logs/.code_state
+logs/translation_history.jsonl
 *.pdf:Zone.Identifier
 TimeCycles.pdf

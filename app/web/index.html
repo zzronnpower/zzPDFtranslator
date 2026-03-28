@@ -21,6 +21,10 @@
     <section class="card">
       <label class="label" for="modelSelect">2) Choose model</label>
       <select id="modelSelect"></select>
+      <label class="label" for="ocrPresetSelect">OCR preset (for scanned PDFs)</label>
+      <select id="ocrPresetSelect">
+        <option value="balanced">balanced</option>
+      </select>
       <div class="rangeRow">
         <input id="pageFrom" type="number" min="1" placeholder="From page (optional)" />
         <input id="pageTo" type="number" min="1" placeholder="To page (optional)" />
@@ -46,13 +50,28 @@
         <div id="progressBar"></div>
       </div>
       <p id="actualCost" class="muted"></p>
+      <button id="cancelJobBtn" class="cancel hidden" type="button">Cancel current job</button>
+      <button id="retrySuggestedBtn" class="retry hidden" type="button">Retry from suggested page</button>
       <a id="downloadBtn" class="download hidden" href="#" download>Download translated PDF</a>
     </section>
 
     <section class="card">
-      <label class="label">4) Saved translated files</label>
-      <p id="savedEmpty" class="muted">No translated files yet.</p>
-      <ul id="savedList" class="savedList"></ul>
+      <label class="label">4) Saved files & history</label>
+      <div class="tabBar">
+        <button id="tabSavedBtn" class="tabBtn tabBtnActive" type="button">Saved files</button>
+        <button id="tabHistoryBtn" class="tabBtn" type="button">History</button>
+      </div>
+
+      <div id="savedPanel">
+        <p id="savedEmpty" class="muted">No translated files yet.</p>
+        <ul id="savedList" class="savedList"></ul>
+      </div>
+
+      <div id="historyPanel" class="hidden">
+        <p id="historySummary" class="muted">No history yet.</p>
+        <p id="historyEmpty" class="muted">No translation jobs recorded yet.</p>
+        <ul id="historyList" class="historyList"></ul>
+      </div>
     </section>
   </main>
 

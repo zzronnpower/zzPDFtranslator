@@ -12,6 +12,7 @@ class JobStatus(str, Enum):
     translating = "translating"
     done = "done"
     failed = "failed"
+    cancelled = "cancelled"
 
 
 @dataclass
@@ -31,6 +32,9 @@ class UploadedFile:
     page_count: int = 0
     segments: list[TextSegment] = field(default_factory=list)
     source_tokens: int = 0
+    extraction_mode: str = "text"
+    ocr_pages: int = 0
+    ocr_preset: str = "balanced"
 
 
 @dataclass
@@ -61,3 +65,16 @@ class TranslationJob:
     actual_input_tokens: int = 0
     actual_output_tokens: int = 0
     actual_cost_usd: float = 0.0
+    extraction_mode: str = "text"
+    selected_segments: int = 0
+    ocr_preset: str = "balanced"
+    phase: str = "pending"
+    phase_progress: float = 0.0
+    last_progress_at: datetime = field(default_factory=datetime.utcnow)
+    phase_started_at: datetime = field(default_factory=datetime.utcnow)
+    cancelled: bool = False
+    timeout_reason: str | None = None
+    retry_suggestion_page_from: int | None = None
+    translate_duration_seconds: float = 0.0
+    render_duration_seconds: float = 0.0
+    save_duration_seconds: float = 0.0

@@ -91,6 +91,16 @@ docker compose down
 - `TRANSLATION_TARGET_LANGUAGE`: default `Vietnamese`
 - `TRANSLATION_BATCH_MAX_ITEMS`: adaptive batch max item count
 - `TRANSLATION_BATCH_MAX_TOKENS`: adaptive batch token budget
+- `TRANSLATION_CONCURRENCY`: number of concurrent translation workers (balanced default: 4)
+- `OCR_ENABLED`: enable local OCR fallback for image-based PDFs
+- `OCR_DPI`: OCR render DPI (higher = better recognition, slower)
+- `OCR_LANGUAGE`: Tesseract language code (default `eng`)
+- `OCR_MIN_CONFIDENCE`: drop low-confidence OCR words
+- `OCR_FALLBACK_SEGMENT_THRESHOLD`: trigger OCR fallback when extracted text segments are too low
+- `RENDER_PAGES_PER_CHUNK`: rendering heartbeat granularity (pages per render progress update)
+- `JOB_TIMEOUT_TRANSLATE_SECONDS`: watchdog timeout for translate phase
+- `JOB_TIMEOUT_RENDER_SECONDS`: watchdog timeout for render phase
+- `JOB_TIMEOUT_SAVE_SECONDS`: watchdog timeout for final save phase
 - `WARNING_OUTPUT_GROWTH_FACTOR`: warning threshold for output/input ratio
 - `MAX_OUTPUT_GROWTH_FACTOR`: fail threshold for output/input ratio
 
@@ -101,10 +111,17 @@ docker compose down
 - You can estimate and translate only selected pages (for example, pages 1-5 first).
 - Translation starts only after explicit estimate acceptance.
 - Final API usage cost is tracked and shown after/during translation.
+- A History tab tracks each translation job (size, duration, estimate vs actual USD, lines, pages) and total spend.
+- Job status now exposes explicit phases (`translating`, `rendering`, `saving`) and supports cancel.
+- Failed/cancelled jobs can suggest a retry start page in UI for quicker reruns.
 - Layout is preserved by rewriting translated text into original text bounding boxes. Complex PDFs can still need manual QA.
 - Saved output names use `Translated_<original_name>.pdf` (with `_v2`, `_v3` if duplicated).
 - The app now performs translation completeness checks and fails early if too many lines appear untranslated.
 - Text extraction and rewrite now run on text blocks (paragraph-level) to reduce render operations and output size growth.
+- Local OCR fallback (Tesseract) is applied automatically for scanned/image-only PDFs.
 - Output size safeguards: warning threshold (`WARNING_OUTPUT_GROWTH_FACTOR`) and hard-fail threshold (`MAX_OUTPUT_GROWTH_FACTOR`).
 - Translation batching is adaptive by token budget (`TRANSLATION_BATCH_MAX_ITEMS`, `TRANSLATION_BATCH_MAX_TOKENS`) with fallback split-and-retry for missing item IDs.
+- Translation runs with balanced parallel workers to reduce total time while preserving layout pipeline.
+- History includes phase durations (`translate`, `render`, `save`) plus timeout/cancel traces and retry hints.
+- Watchdog timeout is phase-aware and adjusted by OCR preset (`fast`, `balanced`, `quality`).
 - API startup creates and updates `agents/`, `chatlog/`, and `logs/code_changes.log` when code state changes.
